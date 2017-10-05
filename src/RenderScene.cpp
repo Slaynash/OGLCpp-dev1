@@ -11,7 +11,7 @@ RenderScene::~RenderScene(){
 }
 
 
-// Méthodes
+// Mï¿½thodes
 
 bool RenderScene::initWindow(){
     // Initialisation de la SDL
@@ -35,8 +35,8 @@ bool RenderScene::initWindow(){
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 
-    
-    m_window = SDL_CreateWindow(m_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_width, m_height, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL); // Création de la fenêtre
+
+    m_window = SDL_CreateWindow(m_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, m_width, m_height, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL); // Crï¿½ation de la fenï¿½tre
 
     if(m_window == 0){
         std::cout << "Erreur lors de la creation de la fenetre : " << SDL_GetError() << std::endl;
@@ -46,9 +46,9 @@ bool RenderScene::initWindow(){
     }
 
 
-    
 
-    m_glContext = SDL_GL_CreateContext(m_window); // Création du contexte OpenGL
+
+    m_glContext = SDL_GL_CreateContext(m_window); // Crï¿½ation du contexte OpenGL
 
     if(m_glContext == 0){
         std::cout << SDL_GetError() << std::endl;
@@ -88,6 +88,7 @@ void RenderScene::run(){
     // Generates a really hard-to-read matrix, but a normal, standard 4x4 matrix nonetheless
     glm::mat4 projectionMatrix = glm::perspective(45.0f, 1.0f, 0.1f, 100.0f);
 
+    /*
     const float *pSource = (const float*)glm::value_ptr(projectionMatrix);
     for (int i = 0; i < 4; ++i){
         for (int j = 0; j < 4; ++j){
@@ -95,15 +96,21 @@ void RenderScene::run(){
         }
         std::cout << std::endl;
     }
+    */
 
     glm::mat4 viewMatrix = glm::lookAt(glm::vec3(4,3,3),glm::vec3(0,0,0),glm::vec3(0,1,0));
 
     shader.bindProjectionMatrix(projectionMatrix);
     shader.bindViewMatrix(viewMatrix);
     //shader.bindProjectionMatrix(glm::mat4(1.0f));
-    
-    GLuint texture = loadTexture("res/textures/tex1.png", false);
-    
+
+    GLuint texture = SOIL_load_OGL_texture(
+      "res/textures/tex1.png",
+      SOIL_LOAD_AUTO,
+      SOIL_CREATE_NEW_ID,
+      SOIL_FLAG_INVERT_Y
+    );
+
     glUseProgram(shader.getProgramID());
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -116,45 +123,79 @@ void RenderScene::run(){
 
         glUseProgram(0);
 
-        SDL_GL_SwapWindow(m_window);// Actualisation de la fenêtre
+        SDL_GL_SwapWindow(m_window);// Actualisation de la fenï¿½tre
         SDL_WaitEvent(&m_events);
     }
 }
 
+//TOP, BOTTOM, LEFT, RIGHT, FRONT, BACK
+
+static const GLfloat vertices[] = {
+  -1.0f, -1.0f, -1.0f,
+  -1.0f, -1.0f,  1.0f,
+  -1.0f,  1.0f,  1.0f,
+  -1.0f,  1.0f,  1.0f,
+  -1.0f,  1.0f, -1.0f,
+  -1.0f, -1.0f, -1.0f,
+
+   1.0f,  1.0f,  1.0f,
+   1.0f,  1.0f, -1.0f,
+   1.0f, -1.0f, -1.0f,
+   1.0f, -1.0f, -1.0f,
+   1.0f, -1.0f,  1.0f,
+   1.0f,  1.0f,  1.0f,
+};
+
+static const GLfloat uvs[] = {
+  0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
+  0,0, 0,1, 1,1,  1,1, 1,0, 0,0
+};
+/*
 static const GLfloat vertices[] = {
     -1.0f,-1.0f,-1.0f, // triangle 1 : begin
     -1.0f,-1.0f, 1.0f,
     -1.0f, 1.0f, 1.0f, // triangle 1 : end
+
      1.0f, 1.0f,-1.0f, // triangle 2 : begin
     -1.0f,-1.0f,-1.0f,
     -1.0f, 1.0f,-1.0f, // triangle 2 : end
+
      1.0f,-1.0f, 1.0f,
     -1.0f,-1.0f,-1.0f,
      1.0f,-1.0f,-1.0f,
+
      1.0f, 1.0f,-1.0f,
      1.0f,-1.0f,-1.0f,
     -1.0f,-1.0f,-1.0f,
+
     -1.0f,-1.0f,-1.0f,
     -1.0f, 1.0f, 1.0f,
     -1.0f, 1.0f,-1.0f,
+
      1.0f,-1.0f, 1.0f,
     -1.0f,-1.0f, 1.0f,
     -1.0f,-1.0f,-1.0f,
+
     -1.0f, 1.0f, 1.0f,
     -1.0f,-1.0f, 1.0f,
      1.0f,-1.0f, 1.0f,
+
      1.0f, 1.0f, 1.0f,
      1.0f,-1.0f,-1.0f,
      1.0f, 1.0f,-1.0f,
+
      1.0f,-1.0f,-1.0f,
      1.0f, 1.0f, 1.0f,
      1.0f,-1.0f, 1.0f,
+
      1.0f, 1.0f, 1.0f,
      1.0f, 1.0f,-1.0f,
     -1.0f, 1.0f,-1.0f,
+
      1.0f, 1.0f, 1.0f,
     -1.0f, 1.0f,-1.0f,
     -1.0f, 1.0f, 1.0f,
+
      1.0f, 1.0f, 1.0f,
     -1.0f, 1.0f, 1.0f,
      1.0f,-1.0f, 1.0f
@@ -162,43 +203,19 @@ static const GLfloat vertices[] = {
 
 const float uvs[] = {
     0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
+    1, 1, 1, 0, 0, 0,
     0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
+    1, 1, 1, 0, 0, 0,
     0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
+    1, 1, 1, 0, 0, 0,
     0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
+    1, 1, 1, 0, 0, 0,
     0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
+    1, 1, 1, 0, 0, 0,
     0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 0, 1, 0, 0,
+    1, 1, 1, 0, 0, 0,
 };
-
+*/
 void RenderScene::render(){
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -207,9 +224,9 @@ void RenderScene::render(){
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, vertices);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, uvs);
-    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(1);
 
-    glDrawArrays(GL_TRIANGLES, 0, 12*3);
+    glDrawArrays(GL_TRIANGLES, 0, 12);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
 }

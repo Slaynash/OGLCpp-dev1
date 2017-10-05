@@ -12,5 +12,6 @@ uniform mat4 vMatrix;
 void main(){
 	gl_Position = pMatrix * vMatrix * vec4(in_Vertex, 1.0);
 	color = in_Vertex * 0.5 + 0.5;
+	//texCoords = in_Vertex.xz * 0.5 + 0.5;
 	texCoords = in_TexCoord;
 }
