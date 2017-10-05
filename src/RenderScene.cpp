@@ -114,6 +114,10 @@ void RenderScene::run(){
     glUseProgram(shader.getProgramID());
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
+    glEnable(GL_DEPTH_TEST);
 
     while(m_events.window.event != SDL_WINDOWEVENT_CLOSE){
 
@@ -131,6 +135,7 @@ void RenderScene::run(){
 //TOP, BOTTOM, LEFT, RIGHT, FRONT, BACK
 
 static const GLfloat vertices[] = {
+
   -1.0f, -1.0f, -1.0f,
   -1.0f, -1.0f,  1.0f,
   -1.0f,  1.0f,  1.0f,
@@ -139,83 +144,51 @@ static const GLfloat vertices[] = {
   -1.0f, -1.0f, -1.0f,
 
    1.0f,  1.0f,  1.0f,
-   1.0f,  1.0f, -1.0f,
+   1.0f, -1.0f,  1.0f,
    1.0f, -1.0f, -1.0f,
+   1.0f, -1.0f, -1.0f,
+   1.0f,  1.0f, -1.0f,
+   1.0f,  1.0f,  1.0f,
+
+  -1.0f,  1.0f, -1.0f,
+  -1.0f,  1.0f,  1.0f,
+   1.0f,  1.0f,  1.0f,
+   1.0f,  1.0f,  1.0f,
+   1.0f,  1.0f, -1.0f,
+  -1.0f,  1.0f, -1.0f,
+
+   1.0f, -1.0f,  1.0f,
+  -1.0f, -1.0f,  1.0f,
+  -1.0f, -1.0f, -1.0f,
+  -1.0f, -1.0f, -1.0f,
    1.0f, -1.0f, -1.0f,
    1.0f, -1.0f,  1.0f,
+
+  -1.0f, -1.0f, -1.0f,
+  -1.0f,  1.0f, -1.0f,
+   1.0f,  1.0f, -1.0f,
+   1.0f,  1.0f, -1.0f,
+   1.0f, -1.0f, -1.0f,
+  -1.0f, -1.0f, -1.0f,
+
    1.0f,  1.0f,  1.0f,
+  -1.0f,  1.0f,  1.0f,
+  -1.0f, -1.0f,  1.0f,
+  -1.0f, -1.0f,  1.0f,
+   1.0f, -1.0f,  1.0f,
+   1.0f,  1.0f,  1.0f
+
 };
 
 static const GLfloat uvs[] = {
   0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
+  0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
+  0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
+  0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
+  0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
   0,0, 0,1, 1,1,  1,1, 1,0, 0,0
 };
-/*
-static const GLfloat vertices[] = {
-    -1.0f,-1.0f,-1.0f, // triangle 1 : begin
-    -1.0f,-1.0f, 1.0f,
-    -1.0f, 1.0f, 1.0f, // triangle 1 : end
 
-     1.0f, 1.0f,-1.0f, // triangle 2 : begin
-    -1.0f,-1.0f,-1.0f,
-    -1.0f, 1.0f,-1.0f, // triangle 2 : end
-
-     1.0f,-1.0f, 1.0f,
-    -1.0f,-1.0f,-1.0f,
-     1.0f,-1.0f,-1.0f,
-
-     1.0f, 1.0f,-1.0f,
-     1.0f,-1.0f,-1.0f,
-    -1.0f,-1.0f,-1.0f,
-
-    -1.0f,-1.0f,-1.0f,
-    -1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f,-1.0f,
-
-     1.0f,-1.0f, 1.0f,
-    -1.0f,-1.0f, 1.0f,
-    -1.0f,-1.0f,-1.0f,
-
-    -1.0f, 1.0f, 1.0f,
-    -1.0f,-1.0f, 1.0f,
-     1.0f,-1.0f, 1.0f,
-
-     1.0f, 1.0f, 1.0f,
-     1.0f,-1.0f,-1.0f,
-     1.0f, 1.0f,-1.0f,
-
-     1.0f,-1.0f,-1.0f,
-     1.0f, 1.0f, 1.0f,
-     1.0f,-1.0f, 1.0f,
-
-     1.0f, 1.0f, 1.0f,
-     1.0f, 1.0f,-1.0f,
-    -1.0f, 1.0f,-1.0f,
-
-     1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f,-1.0f,
-    -1.0f, 1.0f, 1.0f,
-
-     1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f, 1.0f,
-     1.0f,-1.0f, 1.0f
-};
-
-const float uvs[] = {
-    0, 0, 0, 1, 1, 1,
-    1, 1, 1, 0, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 1, 0, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 1, 0, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 1, 0, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 1, 0, 0, 0,
-    0, 0, 0, 1, 1, 1,
-    1, 1, 1, 0, 0, 0,
-};
-*/
 void RenderScene::render(){
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -226,7 +199,7 @@ void RenderScene::render(){
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, uvs);
     glEnableVertexAttribArray(1);
 
-    glDrawArrays(GL_TRIANGLES, 0, 12);
+    glDrawArrays(GL_TRIANGLES, 0, 6*6);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);
 }
