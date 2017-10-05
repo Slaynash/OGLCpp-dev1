@@ -10,16 +10,16 @@ else
     LDFLAGS = -lglut -lGLU -lGL -lm -lSDL2 -lGLEW -lSDL2_image
 endif
 
-SRC  = $(wildcard src/*.cpp)
-OBJ := $(addsuffix .o, $(basename $(SRC)))
+SRC = $(shell find src/ -type f \( -iname \*.cpp -o -iname \*.c \))
+OBJ = $(patsubst src/%,bin/%,$(addsuffix .o, $(basename $(SRC))))
 
 
 all: directories $(TARGET)
 
 directories:
-	@echo SRC:
+	@echo "=== SRC ==="
 	@echo $(SRC)
-	@echo OBJ:
+	@echo "=== OBJ ==="
 	@echo $(OBJ)
 	@mkdir -p bin
 	@mkdir -p build
@@ -30,7 +30,14 @@ compileAndRun: all
 $(TARGET): $(OBJ)
 	$(CC) -o build/$@ $^ $(LDFLAGS)
 
+bin/%.o: src/%.c
+	@echo ===== Creating file $@ ===
+	mkdir -p $(dir $@)
+	$(CC) -o $@ -c $< $(CFLAGS)
+
 bin/%.o: src/%.cpp
+	@echo ===== Creating file $@ ===
+	mkdir -p $(dir $@)
 	$(CC) -o $@ -c $< $(CFLAGS)
 
 clean:
@@ -38,9 +45,3 @@ clean:
 
 cleaner: clean
 	@rm -rf build/
-
-list:
-	@echo "\033[0;31m.h:\033[0m"
-	@ls src/*.h
-	@echo "\033[0;31m.cpp:\033[0m"
-	@ls src/*.cpp

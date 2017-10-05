@@ -8,7 +8,7 @@ int main()
 	if(scene.initWindow() == false)
 		return -1;
 
-    if(scene.initGL() == false)
+  if(scene.initGL() == false)
 		return -1;
 
 	scene.run();
