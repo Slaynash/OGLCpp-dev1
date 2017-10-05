@@ -1,8 +1,6 @@
 #include "RenderScene.h"
 #define PI 3.14159f
 
-// Constructeur de Destucteur
-
 RenderScene::RenderScene(std::string title, int width, int height) : m_title(title), m_width(width), m_height(height), m_window(0), m_glContext(0){}
 
 RenderScene::~RenderScene(){
@@ -11,11 +9,7 @@ RenderScene::~RenderScene(){
     SDL_Quit();
 }
 
-
-// M�thodes
-
 bool RenderScene::initWindow(){
-    // Initialisation de la SDL
 
     if(SDL_Init(SDL_INIT_VIDEO) < 0){
         std::cout << "Erreur lors de l'initialisation de la SDL : " << SDL_GetError() << std::endl;
@@ -29,7 +23,6 @@ bool RenderScene::initWindow(){
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-
 
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
@@ -102,6 +95,8 @@ void RenderScene::run(){
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+
     float pitch=0, yaw=0;
 
     bool close = false;
@@ -113,7 +108,7 @@ void RenderScene::run(){
     posY = 0;
     posZ = -4;
 
-    float angMul;
+    float angMul = 0;
 
     while(!close){
 
@@ -143,10 +138,14 @@ void RenderScene::run(){
                 else if(event.key.keysym.sym == SDLK_SPACE)     space = 0;
                 else if(event.key.keysym.sym == SDLK_LSHIFT)    lshift = 0;
             }
+            else if(event.type == SDL_MOUSEMOTION){
+                yaw -= event.motion.xrel*0.01f;
+                pitch -= event.motion.yrel*0.01f;
+            }
         }
 
-        pitch += (lookup-lookdown)*0.1f;
-        yaw += (lookleft-lookright)*0.1f;
+        pitch += (lookup-lookdown)*0.01f;
+        yaw += (lookleft-lookright)*0.01f;
         posX += sin(yaw)*(forward-backward);
         posZ += cos(yaw)*(forward-backward);
 
@@ -166,7 +165,7 @@ void RenderScene::run(){
         lookY = sin(pitch) + posY;
         lookZ = cos(yaw)*angMul + posZ;
 
-        
+
 
         glUseProgram(shader->getProgramID());
         render();
@@ -176,58 +175,56 @@ void RenderScene::run(){
 }
 
 static const GLfloat vertices[] = {
+    -1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f, -1.0f, -1.0f,
 
-  -1.0f, -1.0f, -1.0f,
-  -1.0f, -1.0f,  1.0f,
-  -1.0f,  1.0f,  1.0f,
-  -1.0f,  1.0f,  1.0f,
-  -1.0f,  1.0f, -1.0f,
-  -1.0f, -1.0f, -1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f,  1.0f,
 
-   1.0f,  1.0f,  1.0f,
-   1.0f, -1.0f,  1.0f,
-   1.0f, -1.0f, -1.0f,
-   1.0f, -1.0f, -1.0f,
-   1.0f,  1.0f, -1.0f,
-   1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
 
-  -1.0f,  1.0f, -1.0f,
-  -1.0f,  1.0f,  1.0f,
-   1.0f,  1.0f,  1.0f,
-   1.0f,  1.0f,  1.0f,
-   1.0f,  1.0f, -1.0f,
-  -1.0f,  1.0f, -1.0f,
+     1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f,  1.0f,
 
-   1.0f, -1.0f,  1.0f,
-  -1.0f, -1.0f,  1.0f,
-  -1.0f, -1.0f, -1.0f,
-  -1.0f, -1.0f, -1.0f,
-   1.0f, -1.0f, -1.0f,
-   1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f, -1.0f,
 
-  -1.0f, -1.0f, -1.0f,
-  -1.0f,  1.0f, -1.0f,
-   1.0f,  1.0f, -1.0f,
-   1.0f,  1.0f, -1.0f,
-   1.0f, -1.0f, -1.0f,
-  -1.0f, -1.0f, -1.0f,
-
-   1.0f,  1.0f,  1.0f,
-  -1.0f,  1.0f,  1.0f,
-  -1.0f, -1.0f,  1.0f,
-  -1.0f, -1.0f,  1.0f,
-   1.0f, -1.0f,  1.0f,
-   1.0f,  1.0f,  1.0f
-
+     1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f
 };
 
 static const GLfloat uvs[] = {
-  0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
-  0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
-  0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
-  0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
-  0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
-  0,0, 0,1, 1,1,  1,1, 1,0, 0,0
+    0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
+    0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
+    0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
+    0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
+    0,0, 0,1, 1,1,  1,1, 1,0, 0,0,
+    0,0, 0,1, 1,1,  1,1, 1,0, 0,0
 };
 
 void RenderScene::render(){
