@@ -1,5 +1,5 @@
 #include "RenderScene.h"
-
+#include <iostream>
 
 int main()
 {
@@ -12,6 +12,6 @@ int main()
 		return -1;
 
 	scene.run();
-
+	std::cout << "end of program" << std::endl;
 	return 0;
 }

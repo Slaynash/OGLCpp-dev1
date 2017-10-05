@@ -20,7 +20,6 @@ class Shader
     void bindProjectionMatrix(glm::mat4 pMatrix);
     void bindViewMatrix(glm::mat4 vMatrix);
 
-
     private:
 
     void bindAttributes();
